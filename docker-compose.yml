@@ -10,7 +10,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-leads}
       POSTGRES_DB: ${POSTGRES_DB:-leads}
     ports:
-      - "5432:5432"
+      # Host port is configurable to avoid clashing with a native Postgres on 5432.
+      # Container port stays 5432 (what the api connects to on the internal network).
+      - "${DB_HOST_PORT:-5432}:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
