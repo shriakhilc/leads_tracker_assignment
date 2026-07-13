@@ -1,0 +1,7 @@
+New lead assigned to you: {first_name} {last_name}
+
+Email: {email}
+Submitted: {created_at}
+
+Review it in the dashboard:
+{dashboard_url}
