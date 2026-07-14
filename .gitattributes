@@ -1,0 +1,9 @@
+# Normalize line endings: store text files with LF in the repository and let git
+# convert to the platform default in the working tree on checkout.
+* text=auto
+
+# Scripts executed inside the Linux containers MUST stay LF regardless of host OS.
+# A CRLF checkout on Windows breaks the shebang (env: 'bash\r': No such file or directory).
+*.sh text eol=lf
+entrypoint.sh text eol=lf
+*.mako text eol=lf
