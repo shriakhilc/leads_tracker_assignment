@@ -16,7 +16,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-RUN chmod +x entrypoint.sh
+# Strip any CR characters (defensive against CRLF checkouts on Windows hosts, which
+# would otherwise break the shebang) and mark the entrypoint executable.
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
 
 EXPOSE 8000
 
