@@ -30,7 +30,9 @@ function formatDate(iso: string): string {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
+    // Force h23 (00-23). `hour12: false` alone can resolve to the h24 cycle in some
+    // engines, rendering midnight as "24:31" instead of "00:31".
+    hourCycle: "h23",
     timeZone: "UTC",
     timeZoneName: "short",
   }).format(new Date(iso));
