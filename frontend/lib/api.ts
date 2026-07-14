@@ -21,11 +21,18 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 export async function listLeads(params: {
   state?: string;
   assignedToMe?: boolean;
+  sort?: string;
+  order?: string;
+  limit?: number;
+  offset?: number;
 }): Promise<LeadList> {
   const query = new URLSearchParams();
   if (params.state) query.set("state", params.state);
   if (params.assignedToMe) query.set("assigned_to_me", "true");
-  query.set("limit", "200");
+  if (params.sort) query.set("sort", params.sort);
+  if (params.order) query.set("order", params.order);
+  query.set("limit", String(params.limit ?? 25));
+  query.set("offset", String(params.offset ?? 0));
 
   const res = await fetch(`${API_INTERNAL_URL}/leads?${query.toString()}`, {
     headers: authHeaders(),

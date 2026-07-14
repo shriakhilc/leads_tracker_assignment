@@ -17,12 +17,14 @@ node_modules/
 out/
 npm-debug.log*
 yarn-error.log*
+*.tsbuildinfo
 
 # OS / editors
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+cspell.json
 
 # Docker volumes (if bind-mounted locally)
 db_data/

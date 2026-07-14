@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Filters({
   state,
@@ -10,11 +10,17 @@ export default function Filters({
   assignedToMe: boolean;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   function apply(nextState: string | undefined, nextAssigned: boolean) {
-    const params = new URLSearchParams();
+    // Start from the current query so sort/order/page size survive a filter change.
+    const params = new URLSearchParams(searchParams.toString());
     if (nextState) params.set("state", nextState);
+    else params.delete("state");
     if (nextAssigned) params.set("assigned_to_me", "true");
+    else params.delete("assigned_to_me");
+    // A changed filter can shrink the result set, so jump back to the first page.
+    params.delete("page");
     const qs = params.toString();
     router.push(qs ? `/leads?${qs}` : "/leads");
   }

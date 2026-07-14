@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { API_INTERNAL_URL, COOKIE_NAME } from "@/lib/config";
 
 // Streams the resume through the app so the browser never needs the JWT or a
-// MinIO-internal hostname — the app proxies the authenticated backend download.
+// MinIO-internal hostname - the app proxies the authenticated backend download.
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }

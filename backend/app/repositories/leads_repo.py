@@ -5,7 +5,7 @@ import uuid
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Lead, LeadAssignment, LeadState
+from app.models import Lead, LeadAssignment, LeadState, User
 
 
 class LeadsRepository:
@@ -46,11 +46,34 @@ class LeadsRepository:
             stmt = stmt.where(Lead.id.in_(active_lead_ids))
             count_stmt = count_stmt.where(Lead.id.in_(active_lead_ids))
 
-        sort_col = {"created_at": Lead.created_at, "state": Lead.state, "email": Lead.email}.get(
-            sort, Lead.created_at
-        )
-        sort_col = sort_col.desc() if order.lower() == "desc" else sort_col.asc()
-        stmt = stmt.order_by(sort_col).limit(limit).offset(offset)
+        order_desc = order.lower() == "desc"
+
+        def direction(col):
+            return col.desc() if order_desc else col.asc()
+
+        if sort == "assignee":
+            # Order by the active assignment's attorney email. The unique partial index
+            # guarantees at most one active assignment per lead, so this outer join
+            # never fans a lead out into duplicate rows.
+            stmt = (
+                stmt.outerjoin(
+                    LeadAssignment,
+                    (LeadAssignment.lead_id == Lead.id) & (LeadAssignment.active.is_(True)),
+                )
+                .outerjoin(User, User.id == LeadAssignment.attorney_id)
+                .order_by(direction(User.email))
+            )
+        elif sort == "name":
+            stmt = stmt.order_by(direction(Lead.first_name), direction(Lead.last_name))
+        else:
+            sort_col = {
+                "created_at": Lead.created_at,
+                "state": Lead.state,
+                "email": Lead.email,
+            }.get(sort, Lead.created_at)
+            stmt = stmt.order_by(direction(sort_col))
+
+        stmt = stmt.limit(limit).offset(offset)
 
         items = list(self.db.execute(stmt).scalars().all())
         total = self.db.execute(count_stmt).scalar_one()

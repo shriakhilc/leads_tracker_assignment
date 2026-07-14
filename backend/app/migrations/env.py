@@ -6,7 +6,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
-from app.models import Base  # noqa: F401 — registers all models on Base.metadata
+from app.models import Base  # noqa: F401 - registers all models on Base.metadata
 
 config = context.config
 # Inject the DB URL from settings (kept out of alembic.ini so no secrets live in code).

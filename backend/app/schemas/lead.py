@@ -41,7 +41,10 @@ class LeadListOut(BaseModel):
 
 
 class LeadStateUpdate(BaseModel):
-    state: LeadState = Field(..., description="Target state; only REACHED_OUT is accepted today.")
+    state: LeadState = Field(
+        ...,
+        description="Target state. PENDING <-> REACHED_OUT are both accepted (revert supports undoing a mistaken update).",
+    )
 
 
 class ResumeUrlOut(BaseModel):

@@ -1,6 +1,6 @@
 Hi {first_name},
 
-Thanks for your submission — we've received your application and resume.
+Thanks for your submission - we've received your application and resume.
 One of our attorneys will review it and reach out to you shortly.
 
 Best regards,

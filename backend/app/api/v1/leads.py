@@ -94,7 +94,7 @@ def list_leads(
     assigned_to_me: bool = Query(default=False),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
-    sort: str = Query(default="created_at", pattern="^(created_at|state|email)$"),
+    sort: str = Query(default="created_at", pattern="^(created_at|state|email|name|assignee)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

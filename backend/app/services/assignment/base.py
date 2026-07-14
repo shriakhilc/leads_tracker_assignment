@@ -14,7 +14,7 @@ class AssignmentStrategy(Protocol):
     """Extension point for lead → attorney routing (§4).
 
     Swapping in real routing (round-robin, practice area, geography, load-based) touches
-    only the strategy — never the router, the `leads` table, or the submission flow.
+    only the strategy - never the router, the `leads` table, or the submission flow.
     """
 
     def assign(self, lead: Lead) -> uuid.UUID:

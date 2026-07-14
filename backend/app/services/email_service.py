@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -31,11 +32,21 @@ def _render(name: str, **context: object) -> str:
     return _load_template(name).format(**context)
 
 
+def format_timestamp(dt: datetime) -> str:
+    """Human-readable UTC timestamp with an explicit timezone abbreviation.
+
+    Naive datetimes are assumed UTC (columns are stored tz-aware in UTC).
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime("%b %d, %Y, %H:%M UTC")
+
+
 def send_submission_emails(lead_id: uuid.UUID) -> None:
     """Post-commit side effect: prospect confirmation + attorney notification.
 
     Reads the *already-persisted* active assignment; the assignment strategy is never re-run here.
-    Failures are logged, never raised — a failed email must not affect the (already committed) lead.
+    Failures are logged, never raised - a failed email must not affect the (already committed) lead.
     """
     adapter = get_email_adapter()
     db = SessionLocal()
@@ -61,7 +72,7 @@ def send_submission_emails(lead_id: uuid.UUID) -> None:
                 first_name=lead.first_name,
                 last_name=lead.last_name,
                 email=lead.email,
-                created_at=lead.created_at.isoformat(),
+                created_at=format_timestamp(lead.created_at),
                 dashboard_url=settings.dashboard_url,
             )
             _safe_send(
@@ -85,5 +96,5 @@ def send_submission_emails(lead_id: uuid.UUID) -> None:
 def _safe_send(adapter, message: EmailMessage) -> None:
     try:
         adapter.send(message)
-    except Exception:  # noqa: BLE001 — email failure must not crash the background task
+    except Exception:  # noqa: BLE001 - email failure must not crash the background task
         logger.exception("Failed to send email", extra={"extra": {"to": message.to}})

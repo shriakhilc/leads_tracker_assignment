@@ -209,3 +209,37 @@ tr:last-child td {
   color: var(--muted);
   font-size: 0.85rem;
 }
+
+.sort-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sort-header:hover {
+  color: var(--text);
+}
+
+.sort-indicator {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.page-size,
+.page-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

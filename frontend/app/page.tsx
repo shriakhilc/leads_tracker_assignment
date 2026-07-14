@@ -50,7 +50,7 @@ export default function PublicLeadForm() {
         <div className="card">
           <h1>Thank you!</h1>
           <p className="subtitle">
-            We&apos;ve received your submission. Check your inbox for a confirmation email —
+            We&apos;ve received your submission. Check your inbox for a confirmation email -
             an attorney will reach out soon.
           </p>
           <button className="secondary" onClick={() => setSubmitted(false)}>
@@ -66,7 +66,7 @@ export default function PublicLeadForm() {
       <div className="card">
         <h1>Apply now</h1>
         <p className="subtitle">
-          Submit your details and resume — an attorney will review and get in touch.
+          Submit your details and resume - an attorney will review and get in touch.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -83,7 +83,7 @@ export default function PublicLeadForm() {
             <input id="email" name="email" type="email" required />
           </div>
           <div className="field">
-            <label htmlFor="resume">Resume / CV (PDF, DOC, DOCX — max {MAX_MB} MB)</label>
+            <label htmlFor="resume">Resume / CV (PDF, DOC, DOCX - max {MAX_MB} MB)</label>
             <input id="resume" name="resume" type="file" accept={ACCEPTED} required />
           </div>
 
@@ -92,10 +92,6 @@ export default function PublicLeadForm() {
           </button>
           {error && <p className="error">{error}</p>}
         </form>
-
-        <p className="muted" style={{ marginTop: 24 }}>
-          Are you an attorney? <a href="/login">Sign in</a>
-        </p>
       </div>
     </div>
   );

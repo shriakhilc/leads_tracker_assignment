@@ -12,7 +12,7 @@ Implements the spec in [docs/system-design.md](./docs/system-design.md); rationa
 ## Quick start
 
 ```bash
-cp .env.example .env       # optional — sensible defaults are baked in
+cp .env.example .env       # optional - sensible defaults are baked in
 docker compose up --build
 ```
 
@@ -33,7 +33,7 @@ the resume bucket on first boot.
 ## Try it end to end
 
 1. Open http://localhost:3000, fill the form, attach a PDF/DOC/DOCX, submit.
-2. Open http://localhost:8025 — you'll see **two** emails: the prospect confirmation and the
+2. Open http://localhost:8025 - you'll see **two** emails: the prospect confirmation and the
    attorney notification.
 3. Sign in at http://localhost:3000/login with the demo attorney.
 4. On the dashboard: filter by state, toggle **Assigned to me**, download the resume, and click
@@ -49,7 +49,7 @@ Next.js (web)  ──►  FastAPI (api)  ──►  PostgreSQL (db)
                          └───────────►  Mailpit / SMTP (email)
 ```
 
-- **Backend** is layered — routers → services → repositories — with infra behind adapters
+- **Backend** is layered - routers → services → repositories - with infra behind adapters
   (`storage`, `email`) and a swappable `AssignmentStrategy`. See [backend/app](./backend/app).
 - **Lead submission** persists the lead **and** its active assignment in one transaction; the two
   emails are scheduled only *after* that commit, via `BackgroundTasks` (a slow mail provider never
@@ -96,7 +96,7 @@ Base path `/api/v1` (full interactive docs at `/docs`).
 ## Configuration
 
 All config is via environment variables (see [.env.example](./.env.example) and
-[backend/app/core/config.py](./backend/app/core/config.py)). Nothing sensitive is committed —
+[backend/app/core/config.py](./backend/app/core/config.py)). Nothing sensitive is committed -
 `.env` is git-ignored.
 
 **Local ↔ prod swaps** are config-only, thanks to the adapters:
@@ -112,7 +112,7 @@ All config is via environment variables (see [.env.example](./.env.example) and
 ## Notes & production hardening
 
 - **Assignment** uses `SingleAttorneyStrategy` today (every lead → the one seeded attorney). Real
-  routing (round-robin, practice area, load-based) is a drop-in `AssignmentStrategy` — no router,
+  routing (round-robin, practice area, load-based) is a drop-in `AssignmentStrategy` - no router,
   schema, or flow changes.
 - **Not yet included** (called out in the design as prod concerns): rate limiting / CAPTCHA on the
   public form, TLS termination, AV scanning of uploads, and a real queue + worker for email retries

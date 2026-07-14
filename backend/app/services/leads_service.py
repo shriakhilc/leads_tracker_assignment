@@ -29,9 +29,10 @@ from app.services.exceptions import (
 logger = logging.getLogger(__name__)
 
 # Legal state transitions (§4.2). Centralized so future states are a one-line change.
+# REACHED_OUT -> PENDING is allowed so an attorney can undo a mistaken "reached out" click.
 _ALLOWED_TRANSITIONS: dict[LeadState, set[LeadState]] = {
     LeadState.PENDING: {LeadState.REACHED_OUT},
-    LeadState.REACHED_OUT: set(),
+    LeadState.REACHED_OUT: {LeadState.PENDING},
 }
 
 _FILENAME_SAFE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -65,7 +66,7 @@ class LeadsService:
         self._validate_upload(resume_content_type, len(resume_bytes))
 
         safe_name = _sanitize_filename(resume_filename)
-        # Random, unguessable key — never trust client-supplied paths (§10).
+        # Random, unguessable key - never trust client-supplied paths (§10).
         resume_key = f"resumes/{uuid.uuid4()}/{safe_name}"
 
         # 1) Upload the resume to object storage first (outside the DB txn).

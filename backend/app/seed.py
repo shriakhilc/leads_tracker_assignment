@@ -1,6 +1,6 @@
 """First-boot seed: the single demo attorney + the object-storage bucket (§9.1).
 
-Idempotent — safe to run on every boot.
+Idempotent - safe to run on every boot.
 """
 from __future__ import annotations
 

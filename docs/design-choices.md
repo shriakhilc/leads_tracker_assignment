@@ -1,4 +1,4 @@
-# Leads Tracker — Design Choices
+# Leads Tracker - Design Choices
 
 Decision log explaining **why** the system is built the way it is. The authoritative
 *what-to-build* spec lives in [system-design.md](./system-design.md); this document records the
@@ -10,7 +10,7 @@ Format per decision: **Decision · Context · Rationale · Alternatives consider
 
 ## Scope & scale assumption
 
-**Context:** Leads are submitted by humans filling a public form — low write volume, read-mostly
+**Context:** Leads are submitted by humans filling a public form - low write volume, read-mostly
 internal UI.
 
 **Decision:** Build a simple synchronous request path with background email dispatch, rather than a
@@ -28,7 +28,7 @@ app with interfaces gets us testability and swap-ability without that cost.
 **Rationale:** Structured, relational, transactional data; strong typing (`enum` for `state`,
 `citext` for email); good concurrency and indexing; still a single container locally.
 
-**Alternatives considered:** *SQLite* — zero-config and fine for a demo, but Postgres better mirrors
+**Alternatives considered:** *SQLite* - zero-config and fine for a demo, but Postgres better mirrors
 production (concurrency, migration behavior, enum/index semantics) at no extra local-setup cost.
 
 **Future evolution:** managed Postgres (RDS / Cloud SQL / Neon / Supabase), read replicas, PITR backups.
@@ -43,8 +43,8 @@ refresh). Passwords hashed with bcrypt/argon2. The token carries user id/email.
 **Rationale:** Stateless, simple to verify in a FastAPI dependency, and the token identity is reused
 to resolve "the current attorney" for the assignee filter (Decision 4).
 
-**Alternatives considered:** *HTTP-only session cookie* — equally valid; JWT chosen for statelessness
-and a clean verification seam. *Managed IdP now* — overkill for the assignment.
+**Alternatives considered:** *HTTP-only session cookie* - equally valid; JWT chosen for statelessness
+and a clean verification seam. *Managed IdP now* - overkill for the assignment.
 
 **Future evolution:** offload to an IdP (Auth0 / Cognito / Clerk / Google Workspace SSO); the
 JWT-verification seam stays the same.
@@ -59,12 +59,12 @@ implementation is `SingleAttorneyStrategy` (one seeded attorney gets every lead)
 active assignment per lead**, created in the **same transaction** as the lead.
 
 **Rationale:** Attorney-based routing is a stated future direction. A mapping table lets routing
-evolve without a schema rewrite — it cleanly supports reassignment, an assignment history/audit
+evolve without a schema rewrite - it cleanly supports reassignment, an assignment history/audit
 trail, and (later) multiple assignees per lead. The strategy interface keeps the routing decision in
 one place; swapping real business logic in touches neither the router, the `leads` table, nor the
 submission flow.
 
-**Alternatives considered:** *Single FK column on `leads`* — simplest, but reassignment/history and
+**Alternatives considered:** *Single FK column on `leads`* - simplest, but reassignment/history and
 multi-assignee become schema migrations later; rejected for that rigidity.
 
 **Future evolution:** real `AssignmentStrategy` (round-robin, by practice area, geography,
@@ -79,11 +79,11 @@ load-based) plus a reassignment UI.
 token, never from a client-supplied email.
 
 **Rationale:** Supports the future world where attorneys only want their own leads, and does so
-securely — one user can't scope to another's leads by passing a different email. With one seeded
+securely - one user can't scope to another's leads by passing a different email. With one seeded
 attorney today, "assigned to me" and "all leads" return the same set; the toggle becomes meaningful
 once real routing exists.
 
-**Alternatives considered:** *`?assigned_to={email}` free parameter* — rejected as an authorization
+**Alternatives considered:** *`?assigned_to={email}` free parameter* - rejected as an authorization
 hole. A privileged admin variant (`?assigned_to={id}`) is a trivial future add.
 
 ---
@@ -98,8 +98,8 @@ presigned URLs; the bucket is never public.
 the DB and hurts backups/replication. Using the S3 API locally (MinIO) means the same SDK code path
 runs in production.
 
-**Alternatives considered:** *BYTEA/blob in Postgres* — rejected (DB bloat, backup weight). *Local
-filesystem volume* — rejected (doesn't mirror prod, no presigned access model).
+**Alternatives considered:** *BYTEA/blob in Postgres* - rejected (DB bloat, backup weight). *Local
+filesystem volume* - rejected (doesn't mirror prod, no presigned access model).
 
 **Future evolution:** S3 with lifecycle policies, versioning, encryption at rest; optional AV scan.
 
@@ -123,18 +123,18 @@ prospect and attorney emails locally without real sends; the fake makes emails a
 **Decision:** The two submission emails are scheduled **only after the lead and its assignment
 commit**. If either persistence step fails, the transaction rolls back, **neither email is sent**, and
 the prospect receives an error. On success, emails are dispatched via FastAPI `BackgroundTasks`,
-decoupled from the HTTP response. The attorney email reads the already-persisted assignment — it
+decoupled from the HTTP response. The attorney email reads the already-persisted assignment - it
 never re-runs the strategy.
 
 **Rationale:** We must never notify anyone about a lead that wasn't durably stored and assigned.
 Decoupling the actual send means a slow/failing mail provider can't block the prospect's submission or
 lose the stored lead.
 
-**Alternatives considered:** *Send inline before/around commit* — rejected: risks emailing about a
+**Alternatives considered:** *Send inline before/around commit* - rejected: risks emailing about a
 lead that then fails to persist, or blocking the user on a slow provider.
 
 **Future evolution:** replace `BackgroundTasks` with a real queue (SQS/Redis + worker) for retries,
-dead-lettering, and idempotency keys — the `EmailAdapter` call site is unchanged.
+dead-lettering, and idempotency keys - the `EmailAdapter` call site is unchanged.
 
 ---
 
@@ -170,7 +170,7 @@ layer; illegal transitions return `409 Conflict`.
 
 ---
 
-## Summary — technology choices
+## Summary - technology choices
 
 | Choice | Why (short) |
 |--------|-------------|
