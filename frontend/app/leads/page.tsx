@@ -126,7 +126,11 @@ export default async function LeadsDashboard({
                     {SORT_COLUMNS.map((col) => {
                       const active = sort === col.key;
                       return (
-                        <th key={col.key} aria-sort={active ? (order === "asc" ? "ascending" : "descending") : "none"}>
+                        <th
+                          key={col.key}
+                          className={col.key === "state" ? "col-state" : undefined}
+                          aria-sort={active ? (order === "asc" ? "ascending" : "descending") : "none"}
+                        >
                           <Link href={sortHref(col.key)} className="sort-header">
                             {col.label}
                             <span className="sort-indicator">
@@ -147,7 +151,7 @@ export default async function LeadsDashboard({
                         {lead.first_name} {lead.last_name}
                       </td>
                       <td>{lead.email}</td>
-                      <td>
+                      <td className="col-state">
                         <span className={`badge ${lead.state.toLowerCase()}`}>
                           {lead.state === "REACHED_OUT" ? "Reached out" : "Pending"}
                         </span>
