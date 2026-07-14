@@ -109,6 +109,27 @@ All config is via environment variables (see [.env.example](./.env.example) and
 
 ---
 
+## Testing
+
+The backend ships with a **unit** suite (`backend/tests/`) covering the business logic in
+isolation — the state machine, upload/filename validation, submission orchestration and its
+transaction ordering, JWT/password security, the production JWT-secret guard, email rendering and
+its post-commit fallbacks, assignment routing, and authentication. The DB session, object storage,
+and email adapter are all mocked, so **no Postgres, MinIO, or SMTP is required** — the suite runs
+anywhere.
+
+```bash
+cd backend
+python -m venv .venv # first time only
+source .venv/bin/activate   #(Windows: .venv\Scripts\activate)
+pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest
+```
+
+`pytest.ini` sets `pythonpath = .`, so run it from the `backend/` directory.
+
+---
+
 ## Notes & production hardening
 
 - **Assignment** uses `SingleAttorneyStrategy` today (every lead → the one seeded attorney). Real
