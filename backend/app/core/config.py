@@ -3,8 +3,12 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Placeholder JWT secrets shipped for local dev (config default + .env.example).
+# Refused in production so a deploy can't silently sign tokens with a public value.
+_WEAK_JWT_SECRETS = {"change-me-in-production", "dev-secret-change-me"}
 
 
 class Settings(BaseSettings):
@@ -60,6 +64,16 @@ class Settings(BaseSettings):
 
     # --- CORS ---
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
+
+    @model_validator(mode="after")
+    def _require_strong_jwt_secret_in_production(self) -> "Settings":
+        """Fail fast if a production deploy is still using a placeholder JWT secret."""
+        if self.environment == "production" and self.jwt_secret in _WEAK_JWT_SECRETS:
+            raise ValueError(
+                "JWT_SECRET is set to a known placeholder value. Set a strong secret "
+                "(e.g. `openssl rand -hex 32`) before running in production."
+            )
+        return self
 
 
 @lru_cache
